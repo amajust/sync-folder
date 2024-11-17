@@ -20,29 +20,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Set up a non-root user and install sudo
-      - name: Create Non-Root User and Install Sudo
+      # Step 2: Install sudo and dependencies as root
+      - name: Install Dependencies as Root
         run: |
-          # Create a non-root user named 'builder'
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel rsync inotify-tools sudo
           useradd -m builder
-          # Install sudo and configure passwordless sudo access for 'builder'
-          pacman -Syu --noconfirm && pacman -S --noconfirm sudo
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-          # Change ownership of the GitHub workspace to 'builder'
           chown -R builder:builder $GITHUB_WORKSPACE
 
-      # Step 3: Install dependencies as the 'builder' user
-      - name: Install Dependencies
-        run: |
-          sudo -u builder bash -c "pacman -Syu --noconfirm && pacman -S --noconfirm base-devel rsync inotify-tools"
-
-      # Step 4: Build the package as the 'builder' user
+      # Step 3: Build the package as the non-root user
       - name: Build Sync-App Package
         run: |
           cd sync-app
-          sudo -u builder bash -c "makepkg -sf --noconfirm"
+          sudo -u builder makepkg -sf --noconfirm
 
-      # Step 5: Upload the built package as an artifact
+      # Step 4: Upload the built package as an artifact
       - name: Upload Package Artifact
         uses: actions/upload-artifact@v4
         with:
