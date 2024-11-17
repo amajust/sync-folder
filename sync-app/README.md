@@ -1,5 +1,5 @@
 # TO DO 
-Need to check if this can be auto build for others distro also
+Need to check if this can be auto build for others distro
 
 
 # Sync App
