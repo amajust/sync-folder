@@ -1,0 +1,16 @@
+# Maintainer: Ama <ama.equinox@gmail.com>
+pkgname=sync-app
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="A real-time directory synchronization tool using inotify and rsync."
+arch=('x86_64')
+url="https://example.com"
+license=('MIT')
+depends=('inotify-tools' 'rsync')
+source=("sync-app.sh")
+sha256sums=('SKIP')
+
+package() {
+    install -Dm755 sync-app.sh "$pkgdir/usr/bin/sync-app"
+}
+
