@@ -1,0 +1,40 @@
+name: Build Sync-App Package
+
+on:
+  push:
+    paths:
+      - 'sync-app/**'
+  pull_request:
+    paths:
+      - 'sync-app/**'
+
+jobs:
+  build-sync-app:
+    # Using Arch Linux Docker container
+    container:
+      image: archlinux:latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install dependencies
+      - name: Install Dependencies
+        run: |
+          pacman -Syu --noconfirm
+          pacman -S --noconfirm base-devel rsync inotify-tools
+
+      # Step 3: Build the sync-app package
+      - name: Build Sync-App Package
+        run: |
+          cd sync-app
+          makepkg -sf --noconfirm
+
+      # Step 4: Upload the built package as an artifact
+      - name: Upload Package Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sync-app-package
+          path: sync-app-*.pkg.tar.zst
+
