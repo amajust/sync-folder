@@ -1,6 +1,5 @@
 # TO DO 
-Need to check if this can be auto build for others linux, another error
-
+Need to check if this can be auto build for others linux, again
 
 # Sync App
 

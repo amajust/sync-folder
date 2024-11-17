@@ -14,30 +14,33 @@ jobs:
 
     container:
       image: archlinux:latest
+      options: --user builder
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # Step 2: Create a non-root user and set permissions
+      # Step 1: Create and set up a non-root user
       - name: Set Up Non-Root User
         run: |
           useradd -m builder
-          echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
-          chown -R builder:builder $GITHUB_WORKSPACE
+          passwd -d builder
+          mkdir -p /home/builder/sync-app
+          chown -R builder:builder /home/builder
+          ln -s $GITHUB_WORKSPACE /home/builder/sync-app
 
-      # Step 3: Install dependencies
+      # Step 2: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 3: Install dependencies as non-root user
       - name: Install Dependencies
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel rsync inotify-tools
 
-      # Step 4: Build the package using the non-root user
+      # Step 4: Build the package without switching users
       - name: Build Sync-App Package
         run: |
           cd sync-app
-          sudo -u builder bash -c "makepkg -sf --noconfirm"
+          makepkg -sf --noconfirm
 
       # Step 5: Upload the built package as an artifact
       - name: Upload Package Artifact
