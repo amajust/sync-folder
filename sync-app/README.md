@@ -1,3 +1,7 @@
+# TO DO 
+Need to check if this can be auto build for others distro also
+
+
 # Sync App
 
 This folder contains the `sync-app` project, a real-time directory synchronization tool using `inotifywait` and `rsync`.
