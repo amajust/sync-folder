@@ -20,12 +20,13 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Set up a non-root user and adjust permissions
-      - name: Create Non-Root User and Adjust Permissions
+      # Step 2: Set up a non-root user and install sudo
+      - name: Create Non-Root User and Install Sudo
         run: |
           # Create a non-root user named 'builder'
           useradd -m builder
-          # Grant the 'builder' user passwordless sudo access (optional, for flexibility)
+          # Install sudo and configure passwordless sudo access for 'builder'
+          pacman -Syu --noconfirm && pacman -S --noconfirm sudo
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           # Change ownership of the GitHub workspace to 'builder'
           chown -R builder:builder $GITHUB_WORKSPACE
