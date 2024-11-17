@@ -10,7 +10,10 @@ on:
 
 jobs:
   build-sync-app:
-    # Using Arch Linux Docker container
+    # Specify the GitHub runner
+    runs-on: ubuntu-latest
+
+    # Using Arch Linux Docker container for native environment
     container:
       image: archlinux:latest
 
@@ -19,7 +22,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Step 2: Install dependencies
+      # Step 2: Update package database and install dependencies
       - name: Install Dependencies
         run: |
           pacman -Syu --noconfirm
