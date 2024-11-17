@@ -10,33 +10,38 @@ on:
 
 jobs:
   build-sync-app:
-    # Specify the GitHub runner
     runs-on: ubuntu-latest
 
-    # Using Arch Linux Docker container for native environment
     container:
       image: archlinux:latest
 
     steps:
-      # Step 1: Checkout the repository
+      # Step 1: Checkout the repository using the latest version (v4)
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Step 2: Update package database and install dependencies
+      # Step 2: Set up a non-root user for makepkg
+      - name: Set Up Non-Root User
+        run: |
+          useradd -m builder
+          passwd -d builder
+          echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+      # Step 3: Install dependencies
       - name: Install Dependencies
         run: |
           pacman -Syu --noconfirm
           pacman -S --noconfirm base-devel rsync inotify-tools
 
-      # Step 3: Build the sync-app package
+      # Step 4: Build the sync-app package as non-root user
       - name: Build Sync-App Package
         run: |
           cd sync-app
-          makepkg -sf --noconfirm
+          sudo -u builder makepkg -sf --noconfirm
 
-      # Step 4: Upload the built package as an artifact
+      # Step 5: Upload the built package as an artifact using the latest version (v4)
       - name: Upload Package Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: sync-app-package
           path: sync-app-*.pkg.tar.zst
