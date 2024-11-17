@@ -1,4 +1,4 @@
-# Maintainer: Ama <ama.equinox@gmail.com>
+# Maintainer: Ama <your-email@example.com>
 pkgname=sync-app
 pkgver=1.0.0
 pkgrel=1
@@ -11,6 +11,7 @@ source=("sync-app.sh")
 sha256sums=('SKIP')
 
 package() {
-    install -Dm755 sync-app.sh "$pkgdir/usr/bin/sync-app"
+    install -dm755 "$pkgdir/usr/bin"
+    install -Dm755 "$srcdir/sync-app.sh" "$pkgdir/usr/bin/sync-app"
 }
 
