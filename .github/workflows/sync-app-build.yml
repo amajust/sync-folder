@@ -16,30 +16,40 @@ jobs:
       image: archlinux:latest
 
     steps:
-      # Step 1: Checkout the repository (uses default workspace)
+      # Step 1: Check if Git is installed, and add to PATH if it exists
+      - name: Check and Install Git
+        run: |
+          if command -v git >/dev/null 2>&1; then
+            echo "Git is already installed."
+            export PATH="$(dirname $(command -v git)):$PATH"
+          else
+            echo "Git not found, installing Git..."
+            pacman -Syu --noconfirm && pacman -S --noconfirm git
+          fi
+
+      # Step 2: Checkout the repository (uses default workspace)
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Mark GITHUB_WORKSPACE as a Safe Directory
+      # Step 3: Mark GITHUB_WORKSPACE as a Safe Directory
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # Step 3: Install Dependencies as Root
+      # Step 4: Install Remaining Dependencies as Root
       - name: Install Dependencies as Root
         run: |
-          pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel rsync inotify-tools sudo github-cli git
+          pacman -S --noconfirm base-devel rsync inotify-tools sudo github-cli
           useradd -m builder
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           chown -R builder:builder $GITHUB_WORKSPACE
 
-      # Step 4: Build the package as the non-root user
+      # Step 5: Build the package as the non-root user
       - name: Build Sync-App Package
         run: |
           cd sync-app
           sudo -u builder makepkg -sf --noconfirm
 
-      # Step 5: Create a GitHub Release
+      # Step 6: Create a GitHub Release
       - name: Create GitHub Release
         run: |
           gh release create v1.0 sync-app/*.pkg.tar.zst --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target master
