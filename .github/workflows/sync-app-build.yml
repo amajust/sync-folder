@@ -35,8 +35,8 @@ jobs:
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git init
           git remote add origin https://github.com/${GITHUB_REPOSITORY}.git
-          git fetch origin main
-          git checkout main
+          git fetch origin master
+          git checkout master
 
       # Step 4: Build the package as the non-root user
       - name: Build Sync-App Package
@@ -47,7 +47,7 @@ jobs:
       # Step 5: Create a GitHub Release
       - name: Create GitHub Release
         run: |
-          gh release create v1.0 sync-app/*.pkg.tar.zst --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target main
+          gh release create v1.0 sync-app/*.pkg.tar.zst --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
