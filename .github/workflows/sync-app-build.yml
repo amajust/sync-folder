@@ -16,11 +16,15 @@ jobs:
       image: archlinux:latest
 
     steps:
-      # Step 1: Checkout the repository
+      # Step 1: Checkout the repository (uses default workspace)
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: Install Dependencies as Root
+      # Step 2: Mark GITHUB_WORKSPACE as a Safe Directory
+      - name: Configure Git Safe Directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
+      # Step 3: Install Dependencies as Root
       - name: Install Dependencies as Root
         run: |
           pacman -Syu --noconfirm
@@ -28,15 +32,6 @@ jobs:
           useradd -m builder
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           chown -R builder:builder $GITHUB_WORKSPACE
-
-      # Step 3: Initialize Git Repository and Set Safe Directory
-      - name: Initialize Git Repository
-        run: |
-          git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          git init
-          git remote add origin https://github.com/${GITHUB_REPOSITORY}.git
-          git fetch origin master
-          git checkout master
 
       # Step 4: Build the package as the non-root user
       - name: Build Sync-App Package
