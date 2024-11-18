@@ -1,5 +1,8 @@
 name: Build and Release Sync-App Package
 
+permissions:
+  contents: write
+
 on:
   push:
     paths:
@@ -16,7 +19,7 @@ jobs:
       image: archlinux:latest
 
     steps:
-      # Step 1: Check if Git is installed, and add to PATH if it exists
+      # Step 1: Check and Install Git
       - name: Check and Install Git
         run: |
           if command -v git >/dev/null 2>&1; then
@@ -27,15 +30,15 @@ jobs:
             pacman -Syu --noconfirm && pacman -S --noconfirm git
           fi
 
-      # Step 2: Checkout the repository (uses default workspace)
+      # Step 2: Checkout the repository
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Step 3: Mark GITHUB_WORKSPACE as a Safe Directory
+      # Step 3: Configure Git Safe Directory
       - name: Configure Git Safe Directory
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      # Step 4: Install Remaining Dependencies as Root
+      # Step 4: Install Remaining Dependencies
       - name: Install Dependencies as Root
         run: |
           pacman -S --noconfirm base-devel rsync inotify-tools sudo github-cli
