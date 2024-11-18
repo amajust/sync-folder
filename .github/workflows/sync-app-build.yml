@@ -29,9 +29,10 @@ jobs:
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           chown -R builder:builder $GITHUB_WORKSPACE
 
-      # Step 3: Initialize Git Repository
+      # Step 3: Initialize Git Repository and Set Safe Directory
       - name: Initialize Git Repository
         run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
           git init
           git remote add origin https://github.com/${GITHUB_REPOSITORY}.git
           git fetch origin main
