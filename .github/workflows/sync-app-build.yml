@@ -9,7 +9,7 @@ on:
       - 'sync-app/**'
 
 jobs:
-  build-arch:
+  build-sync-app:
     runs-on: ubuntu-latest
 
     container:
@@ -29,13 +29,21 @@ jobs:
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           chown -R builder:builder $GITHUB_WORKSPACE
 
-      # Step 3: Build the package as the non-root user
+      # Step 3: Initialize Git Repository
+      - name: Initialize Git Repository
+        run: |
+          git init
+          git remote add origin https://github.com/${GITHUB_REPOSITORY}.git
+          git fetch origin main
+          git checkout main
+
+      # Step 4: Build the package as the non-root user
       - name: Build Sync-App Package
         run: |
           cd sync-app
           sudo -u builder makepkg -sf --noconfirm
 
-      # Step 4: Create a GitHub Release
+      # Step 5: Create a GitHub Release
       - name: Create GitHub Release
         run: |
           gh release create v1.0 sync-app/*.pkg.tar.zst --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target main
