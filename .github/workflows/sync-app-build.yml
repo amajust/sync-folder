@@ -9,7 +9,7 @@ on:
       - 'sync-app/**'
 
 jobs:
-  build-sync-app:
+  build-arch:
     runs-on: ubuntu-latest
 
     container:
@@ -24,7 +24,7 @@ jobs:
       - name: Install Dependencies as Root
         run: |
           pacman -Syu --noconfirm
-          pacman -S --noconfirm base-devel rsync inotify-tools sudo github-cli
+          pacman -S --noconfirm base-devel rsync inotify-tools sudo github-cli git
           useradd -m builder
           echo 'builder ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
           chown -R builder:builder $GITHUB_WORKSPACE
