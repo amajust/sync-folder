@@ -12,7 +12,7 @@ on:
       - 'sync-app/**'
 
 jobs:
-  build-sync-app:
+  build-arch:
     runs-on: ubuntu-latest
 
     container:
@@ -52,10 +52,17 @@ jobs:
           cd sync-app
           sudo -u builder makepkg -sf --noconfirm
 
-      # Step 6: Create a GitHub Release
-      - name: Create GitHub Release
+      # Step 6: Create an Empty GitHub Release
+      - name: Create Empty GitHub Release
         run: |
-          gh release create v1.0 sync-app/*.pkg.tar.zst --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target master
+          gh release create v1.0 --title "Sync-App v1.0" --notes "Initial release of Sync-App." --target master --draft
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step 7: Upload Package to the Release
+      - name: Upload Package File
+        run: |
+          gh release upload v1.0 sync-app/*.pkg.tar.zst
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
