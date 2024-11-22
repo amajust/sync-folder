@@ -1,0 +1,5 @@
+# Ignore all sync-app package files
+sync-app-*.pkg.tar.zst
+
+pkg/
+src/
